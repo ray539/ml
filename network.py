@@ -82,7 +82,6 @@ class Network:
     M = len(data)
     L = len(self.sizes)
     
-    
     #so, get the sum over all values of nabla_b and nabla_w for all values of x over this minibatch
     sum_nBs = [None] + [np.zeros(b.shape) for b in self.biases[1:]] 
     sum_nWs = [None] + [np.zeros(w.shape) for w in self.weights[1:]]
@@ -109,6 +108,7 @@ class Network:
     activations: list[np.ndarray] = [x]
     zs = [None]
     L = len(self.sizes)
+
     for l in range(1, L):
       xi = activations[l - 1]
       Wi = self.weights[l]
@@ -122,7 +122,7 @@ class Network:
     delta_L = CrossEntropyCost.delta(activations[L - 1], y, zs[L - 1])
     deltas[L - 1] = delta_L
     l = L - 2
-    while l >= 0:
+    while l >= 1:
       Wl1 = self.weights[l + 1]
       deltal1 = deltas[l + 1]
       zl = zs[l]
@@ -135,7 +135,7 @@ class Network:
     nabla_bs: list[np.ndarray] = [None for i in range(L)]
     l = L - 1
     # fill in L - 1 ... 1
-    while L >= 1:
+    while l >= 1:
       nabla_bs[l] = deltas[l].copy()
       R = self.sizes[l]
       C = self.sizes[l - 1]
@@ -154,7 +154,7 @@ class Network:
   
 def sigmoid(v: np.ndarray):
   return 1 / (1 + np.exp(v))
-  
+
 def sigmoid_prime(v: np.ndarray):
   return sigmoid(v) * (1 - sigmoid(v))
 
@@ -164,3 +164,11 @@ def hammard(v: np.ndarray, w: np.ndarray):
   for i in range(N):
     res[i] = v[i] * w[i]
   return res
+
+
+# print(sigmoid(np.array([1,2,3])))
+network = Network([5,5,5,5])
+network.update_minibatch([
+  (np.array([1,2,3,4,5]), np.array([0,1,0,0,0]))
+], 0.5, 0.15, 5)
+
