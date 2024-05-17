@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 class CrossEntropyCost:
   
@@ -54,6 +55,8 @@ class Network:
     for i in range(1, N):
       b = np.random.randn(sizes[i])
       self.biases.append(b)
+
+    
   
   def feed_forward(self, x):
     """
@@ -70,6 +73,26 @@ class Network:
     
     return activations[l - 1]
   
+  
+  def stochastic_gradient_descent(self, training_data: list[tuple[np.ndarray, np.ndarray]], mini_batch_size: int, epochs: int, lmda: float, eta: float):
+    """
+      training data is set of tuples: [(x1, y1), (x2, y2), (x3, y3), etc...]
+      mini_batch_size: how big each minibatch should be
+      epochs: number of epochs to train for. Note each epoch exhausts all the training data
+      lmbda: regularization parameter
+      eta: learning rate
+    """
+    N = len(training_data)
+    for i in range(epochs):
+      random.shuffle(training_data)
+      minibatches = []
+      for j in range(0, N, mini_batch_size):
+        minibatches.append(training_data[j, j + mini_batch_size])
+
+      for minibatch in minibatches:
+        self.update_minibatch(minibatch, lmda, eta)
+    
+
   def update_minibatch(self, data: list[tuple[np.ndarray, np.ndarray]], lmda, eta, N):
     """
       data: [(x1, y1), (x2, y2), ...]
